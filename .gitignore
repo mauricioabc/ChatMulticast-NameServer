@@ -1,0 +1,21 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ignore local PyCharm project settings
+.idea/
+.vscode/
+
+# Ignore environment-specific settings
+.env
+
+# Ignore logs and other generated files
+*.log
+*.swp
+*.swo
+*.sqlite
+logs/
+
+# Ignore virtual environment
+venv/
