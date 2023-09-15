@@ -1,4 +1,3 @@
-from NameServerManager import NameServerManager
 import NameServerAPI
 
 if __name__ == '__main__':
