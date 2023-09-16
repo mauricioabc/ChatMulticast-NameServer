@@ -1,4 +1,4 @@
-import NameServerAPI
+from NameServerAPI import app
 
 if __name__ == '__main__':
-    NameServerAPI.app.run(debug=True)
+    app.run(debug=True)
