@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 from NameServerManager import NameServerManager
 from CryptoManagerFactory import CryptoManagerFactory
-import binascii
+import Converter
+import traceback
 
 app = Flask(__name__)
 
@@ -94,18 +95,33 @@ def process_get_chat_name():
         data = request.get_json()  # Obtém o JSON da solicitação
 
         # Verifica se o JSON contém as chaves necessárias
-        chat_name = data.get('chat_nome')
+        content_data = data.get('data')
+        client_public_key = data.get('client_public_key')
 
-        if chat_name is not None:
-            manager = NameServerManager()
-            chat_data = manager.getChatByName(chat_name)
-            if chat_data:
-                return jsonify({'status': 'success', 'chat_data': chat_data})
+        if content_data is not None and client_public_key is not None:
+            # Processa e converte o conteúdo recebido
+            mensagem, client_public_key = Converter.format_content_and_key(content_data, client_public_key)
+            chat_name = mensagem.get('chat_nome')
+
+            # Verifica chat na base de dados
+            if chat_name is not None:
+                manager = NameServerManager()
+                chat_data = str(manager.getChatByName(chat_name))
+                if chat_data:
+                    # Processa e criptografa o retorno
+                    message_return = Converter.format_return(chat_data, client_public_key)
+                    return jsonify({'status': 'success', 'chat_data': message_return})
+                else:
+                    return jsonify({'status': 'error', 'message': f'Chat "{chat_name}" not found'}), 404
             else:
-                return jsonify({'status': 'error', 'message': f'Chat "{chat_name}" not found'}), 404
+                return jsonify({'status': 'error', 'message': 'O JSON deve conter a chave "chat_nome"'}), 400
         else:
-            return jsonify({'status': 'error', 'message': 'O JSON deve conter a chave "chat_nome"'}), 400
+            return jsonify({'status': 'error',
+                            'message': 'O JSON deve conter as chaves "data" e "client_public_key"}'}), 400
     except Exception as e:
+        # Detalhamento da pilha de execução:
+        # traceback_info = traceback.format_exc()
+        # return jsonify({'status': 'error', 'message': str(e), 'traceback': traceback_info}), 400
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
 
@@ -114,8 +130,7 @@ def process_test_connection():
     if request.method == 'POST':
         crypto_manager_factory = CryptoManagerFactory()
         manager = crypto_manager_factory.get_crypto_manager()
-        server_public_key = manager.server_public_key
-        server_public_key = binascii.hexlify(server_public_key).decode('utf-8')
+        server_public_key = str(manager.server_public_key)
         return jsonify({'server_public_key': server_public_key, 'server_status': 'online'})
     else:
         return jsonify({'erro': 'Esta rota só aceita solicitações POST'}), 400
@@ -124,6 +139,6 @@ def process_test_connection():
 @app.route('/', methods=['GET'])
 def process_server_default_message():
     if request.method == 'GET':
-        return jsonify({'server_message': 'Bem-Vindo ao Servidor de Chaves', 'server_status': 'online'})
+        return jsonify({'server_message': 'Bem-Vindo ao Servidor de Chaves', 'server_status': 'online', 'server_version': '2.0.0'})
     else:
         return jsonify({'erro': 'Esta rota só aceita solicitações POST'}), 400

@@ -12,6 +12,9 @@ porta = 3306
 # Crie o URL de conexão para o MySQL na Azure
 engine = create_engine(f"mysql+mysqlconnector://{usuario}:{senha}@{servidor}:{porta}/{banco_de_dados}")
 
+# senha = quote_plus('P@ssw0rd!')
+# engine = create_engine(f'mssql+pyodbc://sa:{senha}@localhost/Dados?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes')
+
 _SessionFactory = sessionmaker(bind=engine)
 
 Base = declarative_base()
