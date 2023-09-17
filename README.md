@@ -64,7 +64,7 @@ A API estará disponível em `http://localhost:5000`.
 
 ### Buscar as informações de um Chat
 
-- **URL:** `/updatechattuple`
+- **URL:** `/getchatkey`
 - **Método:** POST
 - **Corpo da Solicitação:**
 
@@ -88,7 +88,7 @@ A API estará disponível em `http://localhost:5000`.
 - **Corpo da Solicitação:**
 
 ```json
-Envio sem body
+"Envio sem body"
 ```
 
 ### Verificar o status do servidor
@@ -98,7 +98,7 @@ Envio sem body
 - **Corpo da Solicitação:**
 
 ```json
-Envio sem body
+"Envio sem body"
 ```
 
 ## Referências:
